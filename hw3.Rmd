@@ -39,15 +39,46 @@ real_distances <- diff(sorted_data)
 simulated_distances <- lapply(simulated_data, calculate_distances)
 
 # Plot the real and simulated data
-h <- plot(data$location, rep(1, num_palindromes), pch = 16, col = "blue",
-     main = "Real vs. Simulated Palindrome Locations",
-     xlab = "Position along DNA sequence", ylab = "Number of time", ylim = c(0.5, num_simulations + 0.5))
+num_simulations <- 10
+num_palindromes <- 296
 
-# Add simulated data points
-points(simulated_data[[1]], rep(2, num_palindromes), pch = 16, col = rgb(1, 0, 0, 0.5))
-for (i in 2:num_simulations) {
-  points(simulated_data[[i]], rep(i + 1, num_palindromes), pch = 16, col = rgb(1, 0, 0, 0.5))
+sequence_length <- 229354
+
+
+# List to store simulated sets
+simulated_data <- list()
+
+# Loop to generate multiple simulated sets
+for (i in 1:num_simulations) {
+  simulated_data[[i]] <- sample(1:sequence_length, 296, replace = FALSE)
 }
+```
+
+
+```{r}
+calculate_distances <- function(data) {
+  sorted_data <- sort(data)
+  diff(sorted_data)
+}
+
+# Calculate distances for real data
+sorted_data <- sort(data$location)
+real_distances <- diff(sorted_data)
+
+# Calculate distances for each simulated set
+simulated_distances <- lapply(simulated_data, calculate_distances)
+
+# Plot the real and simulated data
+plot(data$location, rep(1, num_palindromes), pch = 16, col = "blue",
+     main = "Real vs. Simulated Palindrome Locations",
+     xlab = "Position along DNA sequence", ylab = "Simulation Index",
+     ylim = c(0.5, num_simulations + 1))
+
+# Plot simulated palindrome locations
+for (i in 1:num_simulations) {
+  points(simulated_data[[i]], rep(i + 1, num_palindromes), pch = 16, col = "red")
+}
+
 
 
 
