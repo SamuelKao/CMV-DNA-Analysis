@@ -25,7 +25,9 @@ data
 ```
 ## Question 1
 ### Method
+To investigate whether the distribution of palindromic sequences within the CMV DNA sequence differs from random scatter, a simulation approach was employed. The DNA sequence length was set to 229,354 base pairs, and a total of 296 palindromic sites were identified within this length. For the analysis, a set of 10 simulations was conducted to generate random locations of 296 palindromic sites across the DNA sequence. Each simulation created a unique set of palindrome positions by randomly sampling, without replacement, from the total sequence length.
 
+For each set of simulated palindromic sites, the distances between consecutive palindromes were calculated to allow comparison with the real data. This involved sorting the positions of each set of palindromic sites (real and simulated) and then computing the differences between consecutive sorted positions. This step yielded a set of distances that represent the spacing between palindromic sites, which were then compared across real and simulated data to identify potential clustering patterns.
 ### Analysis
 ```{r}
 num_simulations <- 10
@@ -103,9 +105,15 @@ for (i in 1:num_simulations) {
   points(simulated_data[[i]], rep(i + 1, num_palindromes), pch = 16, col = "red")
 }
 ```
+### Conclusion
+The analysis shows that palindromic sites in the CMV DNA sequence form unique, non-random clusters, suggesting they may indicate biologically important regions, like potential replication origins. This preliminary finding highlights areas for further study, including statistical tests and experimental validation to confirm whether these high-density palindrome clusters contribute to viral replication.
 
 ## Question 2
 ### a. 
+### Methods
+To analyze the spacing between consecutive palindromic sites, the positions of palindromic sites in the real data were sorted, and the differences between adjacent positions were calculated. This gave a set of distances that represents the spacing between each pair of consecutive palindromic sites. This same process was applied to each simulated set of palindromic sites, where 296 positions were randomly distributed across the sequence length.
+
+### Analysis
 ```{r}
 hist(real_distances, breaks = 20, col = "blue", main = "Spacing between Consecutive Palindromes (Real)",
      xlab = "Spacing", xlim = c(min(real_distances), max(unlist(simulated_distances))),
@@ -123,7 +131,15 @@ hist(simulated_distances[[1]], breaks = 20, col = rgb(1, 0, 0, 0.5), main = "Spa
 title(main = "Spacing between Consecutive Palindromes (Simulated)")
 
 ```
+### Conclusion
+
+
+
 ### 2b
+### Methods
+To investigate patterns in the sums of pairs of palindromic positions, we calculated the sum of each consecutive pair of positions in the sorted list of real palindromic sites. This process was repeated for each simulated set. By examining these sums, we can determine if certain areas of the DNA sequence tend to contain more or fewer palindromic pairs than would be expected by chance.
+
+### Analysis
 ```{r}
 palindrome_pairs_sum <- rowSums(cbind(sorted_data[-length(sorted_data)], sorted_data[-1]))
 head(palindrome_pairs_sum)
@@ -133,6 +149,10 @@ hist(palindrome_pairs_sum, breaks = 20, col = "blue", main = "Sum of Palindrome 
 
 ```
 ### 2c
+### Methods
+To explore patterns in the sums of triplet positions, the sum of each consecutive triplet in the real data was calculated from the sorted list of palindromic sites. This was also done for the simulated data. Examining these triplet sums may highlight whether the CMV DNA has areas where palindromic sequences tend to cluster in threes, a configuration that might indicate functional hotspots.
+
+### Analysis
 ```{r}
 # Ensure palindrome locations are sorted (real data)
 sorted_locations <- sort(data$location)  # Assuming 'data$location' contains your palindrome positions
