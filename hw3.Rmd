@@ -3,11 +3,30 @@ title: "Untitled"
 output: html_document
 date: "2024-11-05"
 ---
+# 0. Contribution Statement
+Student 1:
+
+Student 2: 
+# 1. Introduction
+This study investigates the distribution of palindromic sequences within the DNA structure of the cytomegalovirus (CMV), a virus known for its complex genome. Specifically, it focuses on understanding whether these palindromic sequences—sections of DNA that read the same forwards and backwards—are randomly scattered or form patterns that may indicate underlying biological functions. The CMV DNA consists of 229,354 base pairs, with researchers identifying 296 palindromic sequences at least 10 pairs long, located across various positions within the genome.
+
+The main objective of this study is to analyze the structural distribution of these palindromic sites, assessing if their arrangement deviates from a uniform scatter across the DNA sequence. Identifying clusters in this distribution may provide clues to essential viral mechanisms, such as origins of replication. Data from this study is derived from a dataset containing the positions of these 296 palindromes.
+
+1. Does the distribution of palindromic sites resemble a random scatter across the DNA sequence?
+2. What patterns, if any, exist in the spacing between consecutive palindromic sites, and do these patterns suggest any underlying structure?
+3.
+4.
+
+
+
 ```{r}
 data <- read.table('hcmv.txt',header = TRUE)
 data
 ```
 ## Question 1
+### Method
+
+### Analysis
 ```{r}
 num_simulations <- 10
 num_palindromes <- 296
@@ -67,6 +86,11 @@ real_distances <- diff(sorted_data)
 
 # Calculate distances for each simulated set
 simulated_distances <- lapply(simulated_data, calculate_distances)
+simulated_distances
+```
+
+
+```{r}
 
 # Plot the real and simulated data
 plot(data$location, rep(1, num_palindromes), pch = 16, col = "blue",
@@ -78,10 +102,6 @@ plot(data$location, rep(1, num_palindromes), pch = 16, col = "blue",
 for (i in 1:num_simulations) {
   points(simulated_data[[i]], rep(i + 1, num_palindromes), pch = 16, col = "red")
 }
-
-
-
-
 ```
 
 ## Question 2
@@ -171,7 +191,7 @@ hist(palindrome_triplets_sum, breaks = 30, col = rgb(0, 0, 1, 0.5),
 # Create separate histograms for the simulated sums of triplets (one for each simulation)
 par(mfrow = c(2, 2))  # Set up a 2x2 grid for multiple plots (adjust as needed)
 
-for (i in 1:4) {  # Display the first 4 simulations
+for (i in 1:4) {
   hist(random_simulations[[i]], breaks = 30, col = rgb(1, 0, 0, 0.5),
        main = paste("Simulated Sum of Triplets (Simulation", i, ")"),
        xlab = "Sum of Consecutive Triplets", ylab = "Frequency")
@@ -179,6 +199,15 @@ for (i in 1:4) {  # Display the first 4 simulations
 
 # Reset the plotting layout
 par(mfrow = c(1, 1))  # Reset to the default single plot layout
+
+
+
+```
+
+
+### Question 3
+
+```{r}
 
 
 
