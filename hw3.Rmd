@@ -1,5 +1,5 @@
 ---
-title: "Untitled"
+title: "HW3"
 output: pdf_document
 date: "2024-11-05"
 ---
@@ -147,9 +147,9 @@ r_pair_sums <- r_positions[-length(r_positions)] + r_positions[-1]
 
 
 
-num_simulations <- 10   # Number of simulated sets you want to create
-num_palindromes <- length(r_positions)   # Match the count of real palindromic sites
-sequence_length <- max(r_positions)      # Use the same maximum range as the real data
+num_simulations <- 10 # Number of simulated sets you want to create
+num_palindromes <- length(r_positions) # Match the count of real palindromic sites
+sequence_length <- max(r_positions) # Use the same maximum range as the real data
 
 # Initialize lists to store simulated sums
 simulated_pair_sums <- list()
@@ -164,20 +164,22 @@ for (i in 1:num_simulations) {
 ```
 
 ```{r}
-hist(r_pair_sums, 
-     breaks = 20, 
-     col = "blue", 
-     main = "Sums of Palindrome Pairs (Real)", 
-     xlab = "Sum", 
-     xlim = c(min(r_pair_sums), max(unlist(simulated_pair_sums))), 
-     ylab = "Frequency", 
-     freq = TRUE)
+hist(r_pair_sums,
+  breaks = 20,
+  col = "blue",
+  main = "Sums of Palindrome Pairs (Real)",
+  xlab = "Sum",
+  xlim = c(min(r_pair_sums), max(unlist(simulated_pair_sums))),
+  ylab = "Frequency",
+  freq = TRUE
+)
 
 # Overlaying histogram for one set of simulated data
-hist(simulated_pair_sums[[1]], 
-     breaks = 20, 
-     col = rgb(1, 0, 0, 0.5), 
-     add = TRUE)
+hist(simulated_pair_sums[[1]],
+  breaks = 20,
+  col = rgb(1, 0, 0, 0.5),
+  add = TRUE
+)
 
 # Add legend
 legend("topright", legend = c("Real", "Simulated"), fill = c("blue", rgb(1, 0, 0, 0.5)))
@@ -191,7 +193,7 @@ To explore patterns in the sums of triplet positions, the sum of each consecutiv
 ### Analysis
 
 ```{r}
-real_triplet_sums <- r_positions[-c(length(r_positions)-1, length(r_positions))] + r_positions[-c(1, length(r_positions))] +r_positions[-c(1, 2)]
+real_triplet_sums <- r_positions[-c(length(r_positions) - 1, length(r_positions))] + r_positions[-c(1, length(r_positions))] + r_positions[-c(1, 2)]
 num_simulations <- 10
 num_palindromes <- length(r_positions)
 sequence_length <- max(r_positions)
@@ -201,15 +203,17 @@ simulated_triplet_sums <- list()
 # Generate simulated sums
 for (i in 1:num_simulations) {
   simulated_positions <- sort(sample(1:sequence_length, num_palindromes, replace = FALSE))
-  simulated_triplet_sums[[i]] <- simulated_positions[-c(length(simulated_positions)-1, length(simulated_positions))] + 
-                                 simulated_positions[-c(1, length(simulated_positions))] + 
-                                 simulated_positions[-c(1, 2)]
+  simulated_triplet_sums[[i]] <- simulated_positions[-c(length(simulated_positions) - 1, length(simulated_positions))] +
+    simulated_positions[-c(1, length(simulated_positions))] +
+    simulated_positions[-c(1, 2)]
 }
 
 # Plotting histograms for real and simulated triplet sums
-hist(real_triplet_sums, breaks = 20, col = "blue", main = "Sums of Palindrome Triplets (Real)", 
-     xlab = "Sum", xlim = c(min(real_triplet_sums), max(unlist(simulated_triplet_sums))), 
-     ylab = "Frequency", freq = TRUE)
+hist(real_triplet_sums,
+  breaks = 20, col = "blue", main = "Sums of Palindrome Triplets (Real)",
+  xlab = "Sum", xlim = c(min(real_triplet_sums), max(unlist(simulated_triplet_sums))),
+  ylab = "Frequency", freq = TRUE
+)
 
 # Overlay with simulated data
 hist(simulated_triplet_sums[[1]], breaks = 20, col = rgb(1, 0, 0, 0.5), add = TRUE)
