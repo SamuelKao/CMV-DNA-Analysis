@@ -4,9 +4,10 @@ output: pdf_document
 date: "2024-11-05"
 ---
 # 0. Contribution Statement
-Student 1:
+Student 1: wrote introduction, methods, anaylsis and conclusion for Question 1,2
 
 Student 2: Wrote R, methods, analysis, and conclusion for Questions 3, 4, 5, and further research.
+
 # 1. Introduction
 This study investigates the distribution of palindromic sequences within the DNA structure of the cytomegalovirus (CMV), a virus known for its complex genome. Specifically, it focuses on understanding whether these palindromic sequences—sections of DNA that read the same forwards and backwards—are randomly scattered or form patterns that may indicate underlying biological functions. The CMV DNA consists of 229,354 base pairs, with researchers identifying 296 palindromic sequences at least 10 pairs long, located across various positions within the genome.
 
@@ -14,8 +15,9 @@ The main objective of this study is to analyze the structural distribution of th
 
 1. Does the distribution of palindromic sites resemble a random scatter across the DNA sequence?
 2. What patterns, if any, exist in the spacing between consecutive palindromic sites, and do these patterns suggest any underlying structure?
-3.
-4.
+3. Does the distribution of palindromic counts across DNA regions indicate non-random clustering?
+4. Does the interval with the highest number of palindromes suggest a potential origin of replication?
+5. How would you advise a biologist who is about to experimentally search for the origin of replication?
 
 
 
@@ -104,7 +106,7 @@ for (i in 1:num_simulations) {
 The analysis shows that palindromic sites in the CMV DNA sequence form unique, non-random clusters, suggesting they may indicate biologically important regions, like potential replication origins. This preliminary finding highlights areas for further study, including statistical tests and experimental validation to confirm whether these high-density palindrome clusters contribute to viral replication.
 
 ## Question 2
-### a. 
+## a. 
 ### Methods
 To analyze the spacing between consecutive palindromic sites, the positions of palindromic sites in the real data were sorted, and the differences between adjacent positions were calculated. This gave a set of distances that represents the spacing between each pair of consecutive palindromic sites. This same process was applied to each simulated set of palindromic sites, where 296 positions were randomly distributed across the sequence length.
 
@@ -117,7 +119,7 @@ hist(real_distances,
 )
 
 # Add title for clarity
-title(main = "Spacing between Consecutive Palindromes (Real)")
+title(main = "Spacing Between Consecutive Palindromes (Real)")
 
 # Now plot the spacing for one simulated set
 hist(simulated_distances[[1]],
@@ -127,104 +129,99 @@ hist(simulated_distances[[1]],
 )
 
 # Add title for clarity
-title(main = "Spacing between Consecutive Palindromes (Simulated)")
+title(main = "Spacing Between Consecutive Palindromes (Simulated)")
 ```
-### Conclusion
+## Conclusion
+The spacing analysis reveals a clear difference between real and simulated palindromic sites. Real data shows clustered spacing, suggesting non-random positioning potentially driven by biological factors. Simulated data, with random spacing, lacks this pattern, supporting the idea that real palindromic sites may hold structural or functional significance.
 
-
-
-### 2b
+## 2b
 ### Methods
 To investigate patterns in the sums of pairs of palindromic positions, we calculated the sum of each consecutive pair of positions in the sorted list of real palindromic sites. This process was repeated for each simulated set. By examining these sums, we can determine if certain areas of the DNA sequence tend to contain more or fewer palindromic pairs than would be expected by chance.
 
-### Analysis
+## Analysis
 ```{r echo = FALSE}
-palindrome_pairs_sum <- rowSums(cbind(sorted_data[-length(sorted_data)], sorted_data[-1]))
-head(palindrome_pairs_sum)
-# Create a histogram for the sum of palindrome pairs
-hist(palindrome_pairs_sum, breaks = 20, col = "blue", main = "Sum of Palindrome Pairs", xlab = "Sum of Consecutive Pairs", ylab = "Frequency")
+r_positions <- data$location
+
+# Calculate real_pair_sums: sums of consecutive pairs
+r_pair_sums <- r_positions[-length(r_positions)] + r_positions[-1]
+
+
+
+num_simulations <- 10   # Number of simulated sets you want to create
+num_palindromes <- length(r_positions)   # Match the count of real palindromic sites
+sequence_length <- max(r_positions)      # Use the same maximum range as the real data
+
+# Initialize lists to store simulated sums
+simulated_pair_sums <- list()
+
+# Generate simulated positions and calculate sums for each simulation
+for (i in 1:num_simulations) {
+  # Generate random positions for simulated data
+  simulated_positions <- sort(sample(1:sequence_length, num_palindromes, replace = FALSE))
+  # Calculate pair sums
+  simulated_pair_sums[[i]] <- simulated_positions[-length(simulated_positions)] + simulated_positions[-1]
+}
 ```
-### 2c
+
+```{r}
+hist(r_pair_sums, 
+     breaks = 20, 
+     col = "blue", 
+     main = "Sums of Palindrome Pairs (Real)", 
+     xlab = "Sum", 
+     xlim = c(min(r_pair_sums), max(unlist(simulated_pair_sums))), 
+     ylab = "Frequency", 
+     freq = TRUE)
+
+# Overlaying histogram for one set of simulated data
+hist(simulated_pair_sums[[1]], 
+     breaks = 20, 
+     col = rgb(1, 0, 0, 0.5), 
+     add = TRUE)
+
+# Add legend
+legend("topright", legend = c("Real", "Simulated"), fill = c("blue", rgb(1, 0, 0, 0.5)))
+```
+###Conclusion
+The histogram analysis for the sums of consecutive palindrome pairs shows a distinct distribution pattern in the real data compared to the simulated data. In the real dataset, the sums display clustering around certain values, suggesting possible non-random positioning or structural influences on palindrome placement. In contrast, the simulated dataset, with uniformly distributed random positions, produces a broader, more even spread of pair sums, indicating randomness.
+## 2c
 ### Methods
 To explore patterns in the sums of triplet positions, the sum of each consecutive triplet in the real data was calculated from the sorted list of palindromic sites. This was also done for the simulated data. Examining these triplet sums may highlight whether the CMV DNA has areas where palindromic sequences tend to cluster in threes, a configuration that might indicate functional hotspots.
 
 ### Analysis
-```{r echo = FALSE}
-# Ensure palindrome locations are sorted (real data)
-sorted_locations <- sort(data$location) # Assuming 'data$location' contains your palindrome positions
 
-# Ensure that the number of palindrome locations is a multiple of 3
-num_palindromes <- length(sorted_locations)
+```{r}
+real_triplet_sums <- r_positions[-c(length(r_positions)-1, length(r_positions))] + r_positions[-c(1, length(r_positions))] +r_positions[-c(1, 2)]
+num_simulations <- 10
+num_palindromes <- length(r_positions)
+sequence_length <- max(r_positions)
+simulated_pair_sums <- list()
+simulated_triplet_sums <- list()
 
-# If the number of palindromes is not a multiple of 3, adjust by removing extra locations
-num_triplets <- floor(num_palindromes / 3) * 3 # Adjust to be a multiple of 3
-sorted_locations <- sorted_locations[1:num_triplets] # Trim excess if necessary
-
-# Create triplets by grouping consecutive locations
-# We will use seq() to generate triplets
-triplets <- cbind(
-  sorted_locations[seq(1, num_triplets - 2, by = 3)], # First element of each triplet
-  sorted_locations[seq(2, num_triplets - 1, by = 3)], # Second element of each triplet
-  sorted_locations[seq(3, num_triplets, by = 3)]
-) # Third element of each triplet
-
-# Calculate the sum of each triplet
-palindrome_triplets_sum <- rowSums(triplets)
-
-# View the first few sums of triplets
-head(palindrome_triplets_sum)
-
-# Simulate random palindrome locations
-set.seed(123) # Set seed for reproducibility
-num_simulations <- 1000 # Number of random simulations
-random_simulations <- list()
-
+# Generate simulated sums
 for (i in 1:num_simulations) {
-  simulated_locations <- sample(1:229354, num_palindromes, replace = FALSE) # Random sample from DNA sequence
-  sorted_simulated_locations <- sort(simulated_locations)
-
-  # Ensure the number of simulated locations is a multiple of 3
-  num_sim_triplets <- floor(length(sorted_simulated_locations) / 3) * 3
-  sorted_simulated_locations <- sorted_simulated_locations[1:num_sim_triplets] # Trim if necessary
-
-  # Create triplets for the simulated data
-  simulated_triplets <- cbind(
-    sorted_simulated_locations[seq(1, num_sim_triplets - 2, by = 3)], # First element of each triplet
-    sorted_simulated_locations[seq(2, num_sim_triplets - 1, by = 3)], # Second element of each triplet
-    sorted_simulated_locations[seq(3, num_sim_triplets, by = 3)]
-  ) # Third element of each triplet
-  # Calculate the sum of each triplet in the simulated data
-  simulated_triplets_sum <- rowSums(simulated_triplets)
-  # Store the results
-  random_simulations[[i]] <- simulated_triplets_sum
+  simulated_positions <- sort(sample(1:sequence_length, num_palindromes, replace = FALSE))
+  simulated_triplet_sums[[i]] <- simulated_positions[-c(length(simulated_positions)-1, length(simulated_positions))] + 
+                                 simulated_positions[-c(1, length(simulated_positions))] + 
+                                 simulated_positions[-c(1, 2)]
 }
 
-# Check the first few sums of simulated triplets (for one simulation)
-head(random_simulations[[1]])
+# Plotting histograms for real and simulated triplet sums
+hist(real_triplet_sums, breaks = 20, col = "blue", main = "Sums of Palindrome Triplets (Real)", 
+     xlab = "Sum", xlim = c(min(real_triplet_sums), max(unlist(simulated_triplet_sums))), 
+     ylab = "Frequency", freq = TRUE)
 
-# Create a histogram for the observed sums of triplets (real data)
-# Create a histogram for the observed sums of triplets (real data)
-hist(palindrome_triplets_sum,
-  breaks = 30, col = rgb(0, 0, 1, 0.5),
-  main = "Observed Sum of Palindrome Triplets",
-  xlab = "Sum of Consecutive Triplets", ylab = "Frequency"
-)
-
-# Create separate histograms for the simulated sums of triplets (one for each simulation)
-par(mfrow = c(2, 2)) # Set up a 2x2 grid for multiple plots (adjust as needed)
-
-for (i in 1:4) {
-  hist(random_simulations[[i]],
-    breaks = 30, col = rgb(1, 0, 0, 0.5),
-    main = paste("Simulated Sum of Triplets (Simulation", i, ")"),
-    xlab = "Sum of Consecutive Triplets", ylab = "Frequency"
-  )
-}
-
-# Reset the plotting layout
-par(mfrow = c(1, 1)) # Reset to the default single plot layout
+# Overlay with simulated data
+hist(simulated_triplet_sums[[1]], breaks = 20, col = rgb(1, 0, 0, 0.5), add = TRUE)
+legend("topright", legend = c("Real", "Simulated"), fill = c("blue", rgb(1, 0, 0, 0.5)))
 ```
 
+
+
+
+
+### Conclusion
+Similarly, for consecutive palindrome triplets, the histogram reveals that the real data exhibits significant clustering around specific sum values, unlike the simulated data. This clustering suggests that the arrangement of palindromic triplets in the real sequence may be non-random, potentially influenced by biological or structural factors, whereas the simulated triplets maintain a uniform, random distribution.
 
 ## Question 3
 
@@ -250,6 +247,7 @@ count_palindromes <- function(positions, interval_length) {
   return(interval_counts)
 }
 ```
+
 ```{r echo = FALSE, fig.height=3}
 # Loop to analyze each interval length
 for (interval_length in interval_lengths) {
@@ -398,9 +396,8 @@ To begin the search, I would advise starting with this high-density interval as 
 ## Question
 Is there a significant difference in the distribution of palindromic sequence lengths between high-density and low-density regions?
 
-This question extends the analysis by comparing the characteristics of palindromic sequences across different density regions. By examining whether high-density clusters contain longer or shorter palindromic sequences compared to low-density or randomly scattered regions, we can identify potential patterns in sequence length that may contribute to clustering. This analysis could involve statistical tests (e.g., t-tests) or distribution comparisons to determine if the length of palindromic sequences is associated with cluster density.
-
 ## Methods
+This question extends the analysis by comparing the characteristics of palindromic sequences across different density regions. By examining whether high-density clusters contain longer or shorter palindromic sequences compared to low-density or randomly scattered regions, we can identify potential patterns in sequence length that may contribute to clustering. This analysis could involve statistical tests (e.g., t-tests) or distribution comparisons to determine if the length of palindromic sequences is associated with cluster density.
 
 ## Analysis
 ```{r echo = FALSE}
@@ -462,3 +459,16 @@ par(mfrow = c(1, 1))
 The analysis does not provide sufficient evidence of a significant difference in palindromic sequence lengths between high-density and low-density regions. The slight differences in mean lengths are likely due to random variation rather than an underlying pattern linked to clustering. Therefore, palindromic length does not appear to play a role in clustering patterns within this dataset.
 
 # Discussion and Conclusion
+This analysis aimed to explore the distribution patterns of palindromic sites within the CMV DNA sequence, particularly in relation to expected uniform random distributions. By comparing real and simulated data, we were able to highlight structural patterns that may indicate non-random organization in the arrangement of palindromic sites.
+
+Spacing Analysis
+The observed spacing between consecutive palindromic sites in the real data showed distinct clustering when compared to the uniform distribution of simulated sites. This clustering suggests that the placement of palindromic sites in CMV DNA may not be random, possibly reflecting underlying biological constraints or functional demands.
+
+Pair and Triplet Sum Analysis
+The sums of consecutive palindrome pairs and triplets in the real data also exhibited clustering, while the simulated data demonstrated a more even distribution. This difference reinforces the notion that palindromic sites in CMV DNA may have a regulated spatial arrangement, which could be critical for DNA replication processes or structural stability.
+
+Biological Implications
+The non-random patterns observed across different analyses suggest that the palindromic sites may play a role in the virus’s replication or structural integrity, potentially pointing to regions of biological significance such as origins of replication. Identifying such clusters provides valuable guidance for experimental studies, directing focus toward intervals with high palindrome density for investigating replication initiation sites.
+
+In conclusion, our findings highlight the potential biological importance of palindromic clustering in CMV DNA, underscoring that these sites are likely structured rather than randomly scattered. Future experimental work can build on these insights to further investigate the role of palindromic sites in viral replication and DNA organization.
+
